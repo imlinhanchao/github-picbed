@@ -19,10 +19,10 @@ const options = {
 const github = require('github-upload')(options);
 
 github.upload({
-    data: '/your/file/path'
+    data: '/your/file/path.jpg'
 })
 .then(url) {
-    console.log(url); // http://username.github.io/repository/hash.file
+    console.log(url); // http://username.github.io/repository/hash.jpg
 }
 .catch(error) {
     console.error(error.message);
