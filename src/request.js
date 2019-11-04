@@ -19,9 +19,16 @@ module.exports = function ({
             }
         };
 
-        var req = https.request(options, function (res) {
+        let req = https.request(options, (res) => {
+            let body = '';
+
             res.setEncoding('utf8');
-            res.on('data', function (body) {
+
+            res.on('data', (data) => {
+                body += data;
+            });
+            
+            res.on('end', () => {
                 try {
                     resolve(JSON.parse(body))
                 } catch (_) {
@@ -29,6 +36,7 @@ module.exports = function ({
                 }
             });
         });
+
         req.on('error', function (e) {
             reject(e);
         });
