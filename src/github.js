@@ -19,6 +19,20 @@ module.exports = function ({
         domain: domain || `${username}.github.io/${repository}`
     }
 
+    function getPages() {
+        let rsp = await request({
+            path: `/repos/${username}/${repository}/pages`,
+            token: _options.token,
+            method: 'GET'
+        });
+
+        if (!rsp.html_url) {
+            throw new Error('The repository must be setting GitHub Pages.')
+        }
+    }
+
+    getPages();
+
     return {
         async upload({
             data,
@@ -37,14 +51,14 @@ module.exports = function ({
             filename = filename || fileHash + (extname || '');
 
             let rsp = await request({
-                path: `/repos/imlinhanchao/page-pic-bed/contents/${filename}`,
+                path: `/repos/${username}/${repository}/contents/${filename}`,
                 token: _options.token,
                 method: 'GET'
             });
 
             if (!rsp.content) {
                 let rsp = await request({
-                    path: `/repos/imlinhanchao/page-pic-bed/contents/${filename}`,
+                    path: `/repos/${username}/${repository}/contents/${filename}`,
                     token: _options.token,
                     method: 'PUT',
                     data: {
@@ -80,6 +94,7 @@ module.exports = function ({
                 email: email || name + '@github.com',
                 domain: domain || `${username}.github.io/${repository}`
             }
+            getPages();
         }
     }
 }
