@@ -4,34 +4,46 @@ const fs = require('fs');
 
 module.exports = function ({
     token,
-    username,
-    repository,
-    name = null,
-    email = null,
-    domain = null
+    repositoryUrl
 }) {
-    let _options = {
-        token,
-        username,
-        repository,
-        name: name || username,
-        email: email || name + '@github.com',
-        domain: domain || `${username}.github.io/${repository}`
+
+    function getOptions({ token, repositoryUrl }) {
+        let repository = repositoryUrl.replace(/http(s|):\/\/github.com\//, '');
+        if (repository.split('/') != 2) throw new Error('Not a invaild repository url.');
+
+        let username = repository.split('/')[0];
+        repository = repository.split('/')[1];
+        let pagesInfo = getPages({ username, repository, token });
+
+        return {
+            token,
+            username,
+            repository,
+            domain: pagesInfo.domain,
+            path: pagesInfo.path,
+            branch: pagesInfo.branch
+        };
     }
 
-    function getPages() {
+    function getPages({ username, repository, token }) {
         let rsp = await request({
             path: `/repos/${username}/${repository}/pages`,
-            token: _options.token,
+            token,
             method: 'GET'
         });
 
         if (!rsp.html_url) {
             throw new Error('The repository must be setting GitHub Pages.')
         }
+
+        return {
+            domain: rsp.html_url,
+            path: rsp.path,
+            branch: rsp.branch
+        }
     }
 
-    getPages();
+    let _options = getOptions({ token, repositoryUrl, name, email });
 
     return {
         async upload({
@@ -51,50 +63,35 @@ module.exports = function ({
             filename = filename || fileHash + (extname || '');
 
             let rsp = await request({
-                path: `/repos/${username}/${repository}/contents/${filename}`,
+                path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${filename}?ref=${_options.branch}`,
                 token: _options.token,
                 method: 'GET'
             });
 
             if (!rsp.content) {
                 let rsp = await request({
-                    path: `/repos/${username}/${repository}/contents/${filename}`,
+                    path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${filename}`,
                     token: _options.token,
                     method: 'PUT',
                     data: {
                         message: `Upload file ${filename}`,
-                        committer: {
-                            name: _options.username,
-                            email: _options.email
-                        },
                         content: data.toString("base64"),
-                        sha: fileHash
-                    }, 
+                        sha: fileHash,
+                        branch: _options.branch
+                    }
                 });
                 if (!rsp.content) {
                     throw new Error(`Upload file failed: ${rsp.message || 'Unknown Error'}.`);
                 }
             }
 
-            return `http://${domain}/${filename}`;
+            return `http://${_options.domain}/${filename}`;
         },
         config({
             token,
-            username,
-            repository,
-            name = null,
-            email = null,
-            domain = null
+            repositoryUrl
         }) {
-            _options = {
-                token,
-                username,
-                repository,
-                name: name || username,
-                email: email || name + '@github.com',
-                domain: domain || `${username}.github.io/${repository}`
-            }
-            getPages();
+            _options = getOptions({ token, repositoryUrl });
         }
     }
 }
