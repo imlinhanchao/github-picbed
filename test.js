@@ -24,7 +24,7 @@ function sleep (time) {
     });
 
     console.log('wait for init.');
-    await sleep(2000);
+    while(!github.isInitialized()) await sleep(100);
     
     test('Upload readme to repository', async function(assert) {
         assert.deepEqual(await github.upload({

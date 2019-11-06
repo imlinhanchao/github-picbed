@@ -102,6 +102,9 @@ module.exports = function ({
             repositoryUrl
         }) {
             _options = await getOptions({ token, repositoryUrl });
+        },
+        isInitialized() {
+            return !!_options.domain
         }
     }
 }
