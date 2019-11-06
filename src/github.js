@@ -2,18 +2,20 @@ const request = require('./request');
 const crypto = require('crypto');
 const fs = require('fs');
 
+let _options = {};
+
 module.exports = function ({
     token,
     repositoryUrl
 }) {
 
-    function getOptions({ token, repositoryUrl }) {
+    async function getOptions({ token, repositoryUrl }) {
         let repository = repositoryUrl.replace(/http(s|):\/\/github.com\//, '');
-        if (repository.split('/') != 2) throw new Error('Not a invaild repository url.');
+        if (repository.split('/').length != 2) throw new Error('Not a invaild repository url.');
 
         let username = repository.split('/')[0];
         repository = repository.split('/')[1];
-        let pagesInfo = getPages({ username, repository, token });
+        let pagesInfo = await getPages({ username, repository, token });
 
         return {
             token,
@@ -25,7 +27,7 @@ module.exports = function ({
         };
     }
 
-    function getPages({ username, repository, token }) {
+    async function getPages({ username, repository, token }) {
         let rsp = await request({
             path: `/repos/${username}/${repository}/pages`,
             token,
@@ -35,15 +37,22 @@ module.exports = function ({
         if (!rsp.html_url) {
             throw new Error('The repository must be setting GitHub Pages.')
         }
-
+        console.log(rsp)
         return {
             domain: rsp.html_url,
-            path: rsp.path,
-            branch: rsp.branch
+            path: rsp.source.path,
+            branch: rsp.source.branch
         }
     }
 
-    let _options = getOptions({ token, repositoryUrl, name, email });
+    (async () =>{
+        try {
+            _options = await getOptions({ token, repositoryUrl }); 
+            console.dir(_options);
+        } catch (error) {
+            console.error(error);
+        }
+    })();
 
     return {
         async upload({
@@ -69,6 +78,7 @@ module.exports = function ({
             });
 
             if (!rsp.content) {
+                console.dir(_options);
                 let rsp = await request({
                     path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${filename}`,
                     token: _options.token,
@@ -85,13 +95,13 @@ module.exports = function ({
                 }
             }
 
-            return `http://${_options.domain}/${filename}`;
+            return `${_options.domain}${filename}`;
         },
-        config({
+        async config({
             token,
             repositoryUrl
         }) {
-            _options = getOptions({ token, repositoryUrl });
+            _options = await getOptions({ token, repositoryUrl });
         }
     }
 }

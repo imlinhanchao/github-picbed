@@ -1,29 +1,29 @@
 {
-  "name": "github-upload",
-  "version": "0.0.1",
-  "description": "Upload file to github and Get Url",
-  "keywords": [
-    "github",
-    "picture",
-    "upload"
-  ],
-  "main": "index.js",
-  "scripts": {
-      "test": "node test.js"
-  },
-  "author": "Hancel.Lin",
-  "license": "ISC",
-  "dependencies": {},
-  "devDependencies": {
-      "tape": "~1.1.0"
-  },
-  "repository": {
-      "type": "git",
-      "url": "git+https://github.com/imlinhanchao/github-picbed.git"
-  },
-  "bugs": {
-      "url": "https://github.com/imlinhanchao/github-picbed/issues",
-      "email": "imlinhanchao@gmail.com"
-  },
-  "homepage": "https://github.com/imlinhanchao/github-picbed"
+    "name": "github-upload",
+    "version": "0.0.1",
+    "description": "Upload file to github and Get Url",
+    "keywords": [
+        "github",
+        "picture",
+        "upload"
+    ],
+    "main": "index.js",
+    "scripts": {
+        "test": "node test.js"
+    },
+    "author": "Hancel.Lin",
+    "license": "ISC",
+    "dependencies": {},
+    "devDependencies": {
+        "tape": "~1.1.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/imlinhanchao/github-picbed.git"
+    },
+    "bugs": {
+        "url": "https://github.com/imlinhanchao/github-picbed/issues",
+        "email": "imlinhanchao@gmail.com"
+    },
+    "homepage": "https://github.com/imlinhanchao/github-picbed"
 }
