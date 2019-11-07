@@ -95,7 +95,10 @@ module.exports = function ({
                 }
             }
 
-            return `${_options.domain}${filename}`;
+            return {
+                filename,
+                url: `${_options.domain}${filename}`
+            };
         },
         async config({
             token,
