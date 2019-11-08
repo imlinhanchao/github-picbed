@@ -74,4 +74,4 @@ async function upload({ data, extname, filename });
 
 ## Notice
 
-After configuring the GitHub repository address and Token, it takes about 1 second to get the information of GitHub Pages. Therefore, please do not upload immediately after configuration. You can use `isInitialized` to check if initialization has been completed. Or use `await` to wait for the configuration to complete.
+After configuring the GitHub repository address and access token, it takes about 1 second to get the information of GitHub Pages. Therefore, please do not upload immediately after configuration. You can use `isInitialized` to check if initialization has been completed. Or use `await` to wait for the configuration to complete.
