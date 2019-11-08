@@ -5,13 +5,13 @@
 ## 安装
 
 ```bash
-npm install github-upload
+npm install github-picbed
 ```
 
 ## 用法 
 
 ```javascript
-const github = require('github-upload')({
+const github = require('github-picbed')({
     token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     repository: 'https://github.com/imlinhanchao/upload-file'
 })
