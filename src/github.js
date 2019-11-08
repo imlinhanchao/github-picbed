@@ -5,8 +5,8 @@ const fs = require('fs');
 let _options = {};
 
 module.exports = function ({
-    token,
-    repositoryUrl
+    token = null,
+    repositoryUrl = null
 }) {
 
     async function getOptions({ token, repositoryUrl }) {
@@ -47,6 +47,7 @@ module.exports = function ({
 
     (async () =>{
         try {
+            if (!token && !repositoryUrl) return;
             _options = await getOptions({ token, repositoryUrl }); 
             console.dir(_options);
         } catch (error) {
