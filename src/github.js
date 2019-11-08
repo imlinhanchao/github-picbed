@@ -6,11 +6,11 @@ let _options = {};
 
 module.exports = function ({
     token = null,
-    repositoryUrl = null
+    repository = null
 }) {
 
-    async function getOptions({ token, repositoryUrl }) {
-        let repository = repositoryUrl.replace(/http(s|):\/\/github.com\//, '');
+    async function getOptions({ token, repository }) {
+        repository = repository.replace(/http(s|):\/\/github.com\//, '');
         if (repository.split('/').length != 2) throw new Error('Not a invaild repository url.');
 
         let username = repository.split('/')[0];
@@ -47,8 +47,8 @@ module.exports = function ({
 
     (async () =>{
         try {
-            if (!token && !repositoryUrl) return;
-            _options = await getOptions({ token, repositoryUrl }); 
+            if (!token && !repository) return;
+            _options = await getOptions({ token, repository }); 
             console.dir(_options);
         } catch (error) {
             console.error(error);
@@ -103,9 +103,9 @@ module.exports = function ({
         },
         async config({
             token,
-            repositoryUrl
+            repository
         }) {
-            _options = await getOptions({ token, repositoryUrl });
+            _options = await getOptions({ token, repository });
         },
         isInitialized() {
             return !!_options.domain
