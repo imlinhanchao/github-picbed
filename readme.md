@@ -28,7 +28,7 @@ router.post('/upload', async (req, res, next) => {
 ## Preparation
 
 1. You need to create an access token in [GitHub](https://github.com/settings/tokens). Select only `repo` for the `select scopes`.
-2. Create a repository use to upload files.
+2. Create a repository use to upload files. And then enable GitHub Pages.
 
 ## Functions
 
