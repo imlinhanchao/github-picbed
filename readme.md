@@ -11,22 +11,18 @@ npm install github-upload
 ## Usage 
 
 ```javascript
-const options = {
-    token: '',
-    username: '',
-    repository: ''
-};
-const github = require('github-upload')(options);
-
-github.upload({
-    data: '/your/file/path.jpg'
+const github = require('github-upload')({
+    token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    repository: 'https://github.com/imlinhanchao/upload-file'
 })
-.then(url) {
-    console.log(url); // http://username.github.io/repository/hash.jpg
-}
-.catch(error) {
-    console.error(error.message);
-}
+const path = require('path');
+
+router.post('/upload', async (req, res, next) => {
+    let data = req.files[0].buffer;
+    let extname = path.extname(req.files[0].originalname);
+    let upload = await github.upload({ data, extname })
+    res.json(upload);
+})
 ```
 
 ## Preparation
@@ -39,19 +35,19 @@ github.upload({
 ### Config Upload Options
 
 ```javascript
-async function config({ token, repositoryUrl });
+async function config({ token, repository });
 ```
 
 #### Parameter Object 
 |key|description|
 |--|--|
 |token|Your GitHub access token.|
-|repositoryUrl|Your repository use to upload files.|
+|repository|Your repository use to upload files.|
 
 ### Check Initialize State
 
 ```javascript
-async function isInitialized({ token, repositoryUrl });
+async function isInitialized();
 ```
 
 #### Return Value
@@ -76,18 +72,6 @@ async function upload({ data, extname, filename });
 |filename|The filename that was eventually uploaded.|
 |url|Access URL.|
 
-## Example
+## Notice
 
-```javascript
-const github = require('github-upload')({
-    token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    repository: 'https://github.com/imlinhanchao/upload-file'
-})
-const path = require('path');
-
-router.post('/upload', async (req, res, next) => {
-    let data = req.files[0].buffer;
-    let upload = await github.upload({ data, extname: path.extname(req.files[0].originalname) })
-    res.json(upload);
-})
-```
+After configuring the GitHub repository address and Token, it takes about 1 second to get the information of GitHub Pages. Therefore, please do not upload immediately after configuration. You can use `isInitialized` to check if initialization has been completed. Or use `await` to wait for the configuration to complete.
