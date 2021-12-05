@@ -6,24 +6,38 @@ let _options = {};
 
 module.exports = function ({
     token = null,
-    repository = null
+    repository = null,
+    branch = null
 }) {
 
-    async function getOptions({ token, repository }) {
+    async function getOptions({ token, repository, branch }) {
         repository = repository.replace(/http(s|):\/\/github.com\//, '');
         if (repository.split('/').length != 2) throw new Error('Not a invaild repository url.');
 
         let username = repository.split('/')[0];
         repository = repository.split('/')[1];
-        let pagesInfo = await getPages({ username, repository, token });
+        let options;
+        if (!branch) {
+            let pagesInfo = await getPages({ username, repository, token });
+            options = {
+                domain: pagesInfo.domain,
+                path: pagesInfo.path,
+                branch: pagesInfo.branch    
+            }
+        }
+        else {
+            options = {
+                domain: `https://cdn.jsdelivr.net/gh/${username}/${repository}/`,
+                path: '/',
+                branch
+            }
+        }
 
         return {
             token,
             username,
             repository,
-            domain: pagesInfo.domain,
-            path: pagesInfo.path,
-            branch: pagesInfo.branch
+            ...options
         };
     }
 
@@ -35,9 +49,9 @@ module.exports = function ({
         });
 
         if (!rsp.html_url) {
-            throw new Error('The repository must be setting GitHub Pages.')
+            return null;
         }
-        console.log(rsp)
+
         return {
             domain: rsp.html_url,
             path: rsp.source.path,
@@ -48,7 +62,7 @@ module.exports = function ({
     (async () =>{
         try {
             if (!token && !repository) return;
-            _options = await getOptions({ token, repository }); 
+            _options = await getOptions({ token, repository, branch }); 
             console.dir(_options);
         } catch (error) {
             console.error(error);
@@ -103,9 +117,10 @@ module.exports = function ({
         },
         async config({
             token,
-            repository
+            repository,
+            branch
         }) {
-            _options = await getOptions({ token, repository });
+            _options = await getOptions({ token, repository, branch });
         },
         isInitialized() {
             return !!_options.domain

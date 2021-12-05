@@ -19,8 +19,8 @@ function sleep (time) {
 
     const github = require('.')({
         token: options.token,
-        repositoryUrl: `https://github.com/${options.username}/${options.repository}`
-        
+        repository: `https://github.com/${options.username}/${options.repository}`,
+        branch: 'main'
     });
 
     console.log('wait for init.');
@@ -30,7 +30,7 @@ function sleep (time) {
         assert.deepEqual(await github.upload({
             data: path.resolve(__dirname, 'readme.md'),
             filename: 'readme.txt'
-        }), `https://${options.username}.github.io/${options.repository}/readme.txt`);
+        }), `https://cdn.jsdelivr.net/gh/${username}/${repository}/readme.txt`);
         assert.end()
     })
 
