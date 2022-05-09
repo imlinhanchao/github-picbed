@@ -85,17 +85,17 @@ module.exports = function ({
 
             let fileHash =  hash(data);
             filename = filename || fileHash + (extname || '');
+            let uploadname = filename.split('/').map(f => encodeURI(filename)).join('/')
 
             let rsp = await request({
-                path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${filename}?ref=${_options.branch}`,
+                path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${uploadname}?ref=${_options.branch}`,
                 token: _options.token,
                 method: 'GET'
             });
 
             if (!rsp.content) {
-                console.dir(_options);
                 let rsp = await request({
-                    path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${filename}`,
+                    path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${uploadname}`,
                     token: _options.token,
                     method: 'PUT',
                     data: {
