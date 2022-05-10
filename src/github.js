@@ -85,7 +85,7 @@ module.exports = function ({
 
             let fileHash =  hash(data);
             filename = filename || fileHash + (extname || '');
-            let uploadname = filename.split('/').map(f => encodeURI(filename)).join('/')
+            let uploadname = filename.split('/').map(f => encodeURI(f)).join('/')
 
             let rsp = await request({
                 path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${uploadname}?ref=${_options.branch}`,
