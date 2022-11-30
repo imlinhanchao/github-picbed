@@ -124,6 +124,9 @@ module.exports = function ({
         }) {
             _options = await getOptions({ token, repository, branch });
         },
+        get options() {
+          return _options;
+        },
         isInitialized() {
             return !!_options.domain
         }
