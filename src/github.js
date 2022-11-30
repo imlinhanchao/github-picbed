@@ -9,7 +9,7 @@ module.exports = function ({
     repository = null,
     branch = null
 }) {
-
+    let isPage = false;
     async function getOptions({ token, repository, branch }) {
         repository = repository.replace(/http(s|):\/\/github.com\//, '');
         if (repository.split('/').length != 2) throw new Error('Not a invaild repository url.');
@@ -24,13 +24,15 @@ module.exports = function ({
                 path: pagesInfo.path,
                 branch: pagesInfo.branch    
             }
+            isPage = true;
         }
         else {
             options = {
-                domain: `https://cdn.jsdelivr.net/gh/${username}/${repository}/`,
+                domain: `https://cdn.jsdelivr.net/gh/${username}/${repository}@${branch}/`,
                 path: '/',
                 branch
             }
+            isPage = false;
         }
 
         return {
