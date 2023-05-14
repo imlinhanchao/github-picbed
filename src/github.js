@@ -7,10 +7,11 @@ let _options = {};
 module.exports = function ({
     token = null,
     repository = null,
-    branch = null
+    branch = null,
+    httpProxy = null
 }) {
     let isPage = false;
-    async function getOptions({ token, repository, branch }) {
+    async function getOptions({ token, repository, branch, httpProxy }) {
         repository = repository.replace(/http(s|):\/\/github.com\//, '');
         if (repository.split('/').length != 2) throw new Error('Not a invaild repository url.');
 
@@ -22,7 +23,7 @@ module.exports = function ({
             options = {
                 domain: pagesInfo.domain,
                 path: pagesInfo.path,
-                branch: pagesInfo.branch    
+                branch: pagesInfo.branch
             }
             isPage = true;
         }
@@ -39,6 +40,7 @@ module.exports = function ({
             token,
             username,
             repository,
+            httpProxy,
             ...options
         };
     }
@@ -47,7 +49,8 @@ module.exports = function ({
         let rsp = await request({
             path: `/repos/${username}/${repository}/pages`,
             token,
-            method: 'GET'
+            method: 'GET',
+            httpProxy
         });
 
         if (!rsp.html_url) {
@@ -64,7 +67,7 @@ module.exports = function ({
     (async () =>{
         try {
             if (!token && !repository) return;
-            _options = await getOptions({ token, repository, branch }); 
+            _options = await getOptions({ token, repository, branch, httpProxy });
             console.dir(_options);
         } catch (error) {
             console.error(error);
@@ -92,7 +95,8 @@ module.exports = function ({
             let rsp = await request({
                 path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${uploadname}?ref=${_options.branch}`,
                 token: _options.token,
-                method: 'GET'
+                method: 'GET',
+                httpProxy: _options.httpProxy
             });
 
             if (!rsp.content) {
@@ -100,6 +104,7 @@ module.exports = function ({
                     path: `/repos/${_options.username}/${_options.repository}/contents${_options.path}${uploadname}`,
                     token: _options.token,
                     method: 'PUT',
+                    httpProxy: _options.httpProxy,
                     data: {
                         message: `Upload file ${filename}`,
                         content: data.toString("base64"),
@@ -120,9 +125,10 @@ module.exports = function ({
         async config({
             token,
             repository,
-            branch
+            branch,
+            httpProxy
         }) {
-            _options = await getOptions({ token, repository, branch });
+            _options = await getOptions({ token, repository, branch, httpProxy });
         },
         get options() {
           return _options;
