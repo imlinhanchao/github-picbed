@@ -4,7 +4,8 @@ module.exports = function ({
     path,
     token,
     data = null,
-    method
+    method,
+    httpProxy = null
 }) {
     return new Promise((resolve, reject) => {
 
@@ -19,6 +20,10 @@ module.exports = function ({
             }
         };
 
+        if (httpProxy) {
+            options.agent = new https.Agent({ proxy: httpProxy });
+        }
+
         let req = https.request(options, (res) => {
             let body = '';
 
@@ -27,7 +32,7 @@ module.exports = function ({
             res.on('data', (data) => {
                 body += data;
             });
-            
+
             res.on('end', () => {
                 try {
                     resolve(JSON.parse(body))
@@ -41,7 +46,7 @@ module.exports = function ({
             reject(e);
         });
 
-        if(data) req.write(JSON.stringify(data));
+        if (data) req.write(JSON.stringify(data));
 
         req.end();
     });
